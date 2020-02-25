@@ -1,0 +1,81 @@
+@page
+@model WebApp.Pages.Books.IndexModel
+
+@{
+    ViewData["Title"] = "Books";
+}
+
+<h1>Books</h1>
+
+<p>
+    <a asp-page="Create">Add new book</a>
+</p>
+
+<form class="form-inline" method="get">
+    <div class="form-group">
+        <!--------- weird hack with value ----------->
+        <input asp-for="Search" value="@Model.Search" class="form-control"/>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Search" class="btn btn-primary"/>
+        <input type="submit" value="Reset" name="ToDoActionReset" class="btn btn-secondary"
+               @(string.IsNullOrWhiteSpace(Model.Search) ? "disabled=\"disabled\"" : "")/>
+    </div>
+</form>
+<div class="padding-on-top-20">
+    @if (!string.IsNullOrWhiteSpace(Model.Search))
+    {
+        <p>Search is active. Search term: @Model.Search</p>
+    }
+    <p>Records: @Model.Books.Count</p>
+</div>
+
+<div class="row">
+    @foreach (var item in Model.Books)
+    {
+        <div class="col-lg-3 col-md-4 col-sm 6 col-xs-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="font-weight-bold">@Html.DisplayFor(modelItem => item.Book.Title)</div>
+                    by @Html.DisplayFor(modelItem => item.Book.BookAuthorsString)
+                </div>
+                <div class="card-body">
+                    <p class="card-text">
+                        <b>Summary:</b> @Html.DisplayFor(modelItem => item.Book.Summary)
+                    </p>
+                    
+                    <p class="card-text"><b>Comments count:</b> @Html.DisplayFor(modelItem => item.CommentCount)</p>
+                    <p class="card-text"><b>Last comment:</b> @Html.DisplayFor(modelItem => item.Book.Comments.LastOrDefault().CommentText)</p>
+                    <a asp-page="/Comments/Index" asp-route-bookId="@item.Book.BookId">Read all comments</a>
+                    <p>
+                        <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#@item.Book.BookId" aria-expanded="false" aria-controls="@item.Book.BookId">
+                            Add comment
+                        </button>
+                    </p>
+                    <div class="collapse" id="@item.Book.BookId">
+                        <div>
+                            <form method="post">
+                                <div class="form-group">
+                                    <label asp-for="Comment.CommentId" class="control-label"></label>
+                                    <input asp-for="Comment.CommentText" class="form-control"/>
+                                    <input asp-for="Comment.BookId" value="@item.Book.BookId" type="hidden" class="form-control"/>
+                                    <span asp-validation-for="Comment.CommentText" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <input type="submit" value="Add" class="btn btn-primary"/>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <a asp-page="./Edit" asp-route-id="@item.Book.BookId" class="card-link">Edit</a>
+                    <a asp-page="./Details" asp-route-id="@item.Book.BookId" class="card-link">Details</a>
+                    <a asp-page="./Delete" asp-route-id="@item.Book.BookId" class="card-link">Delete</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

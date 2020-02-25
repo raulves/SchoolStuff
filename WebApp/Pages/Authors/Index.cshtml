@@ -1,0 +1,112 @@
+@page
+@model WebApp.Pages.Authors.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Authors</h1>
+
+<p>
+    <a asp-page="Create">Add new author</a>
+</p>
+<form asp-page="./Index" method="get">
+    <div class="form-actions no-color">
+        <p>
+            Find by name:
+            <input type="text" name="searchString" value="@Model.CurrentFilter" />
+            <input type="submit" value="Search" class="btn btn-primary" /> |
+            <a asp-page="./Index">Back to full List</a>
+        </p>
+    </div>
+</form>
+<table class="table table-striped table-bordered table-sm">
+    <thead>
+    <tr>
+        <th class="th-sm">
+            <a asp-page="./Index" asp-route-sortOrder="@Model.FirstNameSort" asp-route-currentFilter="@Model.CurrentFilter">
+                @Html.DisplayNameFor(model => model.Author[0].FirstName)
+            </a>
+            
+        </th>
+        <th class="th-sm">
+            <a asp-page="./Index" asp-route-sortOrder="@Model.LastNameSort" asp-route-currentFilter="@Model.CurrentFilter">
+                @Html.DisplayNameFor(model => model.Author[0].LastName)
+            </a>
+            
+        </th>
+        <th class="th-sm">
+            <a asp-page="./Index" asp-route-sortOrder="@Model.YearOfBirthSort" asp-route-currentFilter="@Model.CurrentFilter">
+                @Html.DisplayNameFor(model => model.Author[0].DOB)
+            </a>
+            
+        </th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model.Author)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.FirstName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DOB)
+            </td>
+            <td>
+                <p>
+                    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#@item.AuthorId" aria-expanded="false" aria-controls="@item.AuthorId">
+                        Add book
+                    </button>
+                </p>
+                <div class="collapse" id="@item.AuthorId">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <form method="post">
+                                <div class="form-group">
+                                    <input asp-for="BookAuthor.AuthorId" value="@item.AuthorId" type="hidden" class="form-control"/>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="BookAuthor.BookId" class="control-label"></label>
+                                    <select asp-for="BookAuthor.BookId" class="form-control" asp-items="Model.BookIdSelectList"></select>
+                                </div>
+                                <div class="form-group">
+                                    <input type="submit" value="Add" class="btn btn-primary"/>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <a asp-page="./Edit" asp-route-id="@item.AuthorId">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.AuthorId">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.AuthorId">Delete</a> | 
+                <a asp-page="/Books/Index" asp-route-authorId="@item.AuthorId">Show author books</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+@{
+    var prevDisabled = !Model.Author.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.Author.HasNextPage ? "disabled" : "";
+}
+
+<a asp-page="./Index"
+   asp-route-sortOrder="@Model.CurrentSort"
+   asp-route-pageIndex="@(Model.Author.PageIndex - 1)"
+   asp-route-currentFilter="@Model.CurrentFilter"
+   class="btn btn-primary @prevDisabled">
+    Previous
+</a>
+<a asp-page="./Index"
+   asp-route-sortOrder="@Model.CurrentSort"
+   asp-route-pageIndex="@(Model.Author.PageIndex + 1)"
+   asp-route-currentFilter="@Model.CurrentFilter"
+   class="btn btn-primary @nextDisabled">
+    Next
+</a>

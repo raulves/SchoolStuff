@@ -1,0 +1,42 @@
+@page
+@model WebApp.Pages.Uploads.Index
+
+@{
+    ViewData["Title"] = "Upload";
+}
+
+<h1>Uploaded files</h1>
+
+<p>
+    <a asp-page="Upload">Upload new file</a>
+</p>
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+            Img
+        </th>
+        
+        <th>
+            Filename
+        </th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model.FileNames)
+    {
+        <tr>
+            <td>
+                <img src="~/uploads/@item" height="100" />
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item)
+            </td>
+            <td>
+                <a asp-page="./Delete" asp-route-id="@item">Delete</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
